@@ -60,6 +60,16 @@ void Backtrack::BuildDAG(const Graph &query, const CandidateSet &cs) {
     }
 }
 
+/*
+void Backtrack::Track(const Graph &query, const CandidateSet &cs) {
+
+}
+
+void BackTrack::GetNext(const CandidateSet &cs, size_t curr) {
+
+}
+*/
+
 void Backtrack::Debug(const Graph &data, const Graph &query,
                       const CandidateSet &cs) {
     for(Vertex v = 0; v < query.GetNumVertices(); v++){

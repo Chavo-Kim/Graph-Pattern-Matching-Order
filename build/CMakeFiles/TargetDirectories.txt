@@ -1,0 +1,5 @@
+/mnt/c/Users/smsychjy/Desktop/학교/2021-1/알고리즘/Graph-Pattern-Matching-Order/build/CMakeFiles/rebuild_cache.dir
+/mnt/c/Users/smsychjy/Desktop/학교/2021-1/알고리즘/Graph-Pattern-Matching-Order/build/CMakeFiles/edit_cache.dir
+/mnt/c/Users/smsychjy/Desktop/학교/2021-1/알고리즘/Graph-Pattern-Matching-Order/build/main/CMakeFiles/rebuild_cache.dir
+/mnt/c/Users/smsychjy/Desktop/학교/2021-1/알고리즘/Graph-Pattern-Matching-Order/build/main/CMakeFiles/edit_cache.dir
+/mnt/c/Users/smsychjy/Desktop/학교/2021-1/알고리즘/Graph-Pattern-Matching-Order/build/main/CMakeFiles/program.dir

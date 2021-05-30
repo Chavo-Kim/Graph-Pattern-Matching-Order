@@ -24,6 +24,10 @@ class Backtrack {
 
   void BuildDAG(const Graph &query, const CandidateSet &cs);
 
+  void Track(const Graph &query, const CandidateSet &cs);
+
+  void GetNext(const CandidateSet &cs, size_t curr);
+
   void Debug(const Graph &data, const Graph &query,
              const CandidateSet &cs);
 
