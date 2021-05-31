@@ -141,10 +141,10 @@ void Backtrack::Track(const Graph &data, const CandidateSet &cs, vector<pair<Ver
                     visited[v] = true;
                     Track(data, cs, M_p, root);
                     visited[v] = false;
-                    extendable.insert(u); // Restore the previous extendable set
                 }
             }
         }
+        extendable.insert(u); // Restore the previous extendable set
     }
 }
 
@@ -175,7 +175,7 @@ void Backtrack::UpdateExtendable(const Graph &data, const CandidateSet &cs, Vert
                 if (childCandidatesParentCount[j] == parentCount[child])
                 {
                     availableCandidates[child][j] = true; // j'th candidate of C(child) can now be included
-                    //childCandidatesParentCount[j] = 0;
+                    childCandidatesParentCount[j] = 0;
                 }
             }
         }
