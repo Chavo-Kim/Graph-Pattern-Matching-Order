@@ -33,20 +33,6 @@ void Backtrack::PrintAllMatches(const Graph &data, const Graph &query,
 
     vector<pair<Vertex, Vertex>> initialM;
     Track(data, cs, initialM, DAGRoot);
-    Debug(data, query, cs);
-
-    /*
-    int idx = 0;
-    for (auto i : candidateMatchedParentCount)
-    {
-        cout << "=====================================" << endl;
-        for (auto j : i)
-        {
-            cout << idx << " : " << j << endl;
-            ++idx;
-        }
-    }
-    */
 }
 
 void Backtrack::BuildDAG(const Graph &query, const CandidateSet &cs, Vertex &root)
@@ -106,7 +92,7 @@ void Backtrack::Track(const Graph &data, const CandidateSet &cs, vector<pair<Ver
         size_t MSize = M.size();
         for (size_t i = 0; i < MSize; ++i)
         {
-            cout << "Match: " << M[i].second << endl;
+            cout <<  "query: " << M[i].first << " / data: " << M[i].second << endl;
         }
         cout << "========================================" << endl;
         return;
