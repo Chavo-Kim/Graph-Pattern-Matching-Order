@@ -91,11 +91,11 @@ void Backtrack::Track(const Graph &data, const Graph &query, const CandidateSet 
         size_t MSize = M.size();
         for (size_t i = 0; i < MSize; ++i)
         {
-            //cout <<  "query: " << M[i].first << " / data: " << M[i].second << endl;
+            cout <<  "query: " << M[i].first << " / data: " << M[i].second << endl;
         }
         cout << "========================================" << endl;
-        Check(data, query, M);
-        cout << "========================================" << endl;
+        //Check(data, query, M);
+        //cout << "========================================" << endl;
         return;
     }
     else if (MSize == 0)
@@ -104,7 +104,7 @@ void Backtrack::Track(const Graph &data, const Graph &query, const CandidateSet 
         for (size_t i = 0; i < candSize; ++i)
         {
             Vertex v = cs.GetCandidate(root, i); // v belongs to C(root)
-            UpdateExtendable(data, cs, root, v);
+            AddExtendable(data, cs, root, v);
             M = {{root, v}};
             Track(data, query, cs, M, root);
         }
@@ -120,7 +120,7 @@ void Backtrack::Track(const Graph &data, const Graph &query, const CandidateSet 
             Vertex v = cs.GetCandidate(u, i); // v belongs to C(u)
             if (!visited[v]) //&& availableCandidates[u][v])
             {
-                UpdateExtendable(data, cs, u, v);
+                AddExtendable(data, cs, u, v);
                 if (availableCandidates[u][i])
                 {
                     vector<pair<Vertex, Vertex>> M_p = M;
@@ -129,6 +129,7 @@ void Backtrack::Track(const Graph &data, const Graph &query, const CandidateSet 
                     Track(data, query, cs, M_p, root);
                     visited[v] = false;
                 }
+                RemoveExtendable(data, cs, u, v);
             }
         }
         extendable.insert(u); // Restore the previous extendable set
@@ -136,7 +137,7 @@ void Backtrack::Track(const Graph &data, const Graph &query, const CandidateSet 
 }
 
 // Get the next extendable set when 'added' is matched
-void Backtrack::UpdateExtendable(const Graph &data, const CandidateSet &cs, Vertex added, Vertex candidate) // added: extended query vertex, candidate: extended candidate vertex
+void Backtrack::AddExtendable(const Graph &data, const CandidateSet &cs, Vertex added, Vertex candidate) // added: extended query vertex, candidate: extended candidate vertex
 {
     vector<Vertex> &children = adj_list[added]; // Children adjacent to the newly added
     size_t childNum = children.size();
@@ -162,7 +163,39 @@ void Backtrack::UpdateExtendable(const Graph &data, const CandidateSet &cs, Vert
                 if (childCandidatesParentCount[j] == parentCount[child])
                 {
                     availableCandidates[child][j] = true; // j'th candidate of C(child) can now be included
-                    //childCandidatesParentCount[j] = 0;
+                }
+            }
+        }
+    }
+}
+
+// Remove the extendable set when 'added' is removed
+void Backtrack::RemoveExtendable(const Graph &data, const CandidateSet &cs, Vertex added, Vertex candidate) // added: extended query vertex, candidate: extended candidate vertex
+{
+    vector<Vertex> &children = adj_list[added]; // Children adjacent to the newly added
+    size_t childNum = children.size();
+    for (size_t i = 0; i < childNum; ++i)
+    {
+        // Update DAG count
+        Vertex child = children[i]; // i'th child of added
+        --matchedParentCount[child];
+        if (matchedParentCount[child] < parentCount[child])
+        {
+            extendable.erase(child);
+        }
+
+        // Update candidate count
+        vector<int32_t> &childCandidatesParentCount = candidateMatchedParentCount[child]; // matched parent count of C(child)
+        size_t candidateSize = childCandidatesParentCount.size();
+        for (size_t j = 0; j < candidateSize; ++j) 
+        {
+            Vertex childCandidate = cs.GetCandidate(child, j); // j'th candidate of C(child)
+            if (data.IsNeighbor(candidate, childCandidate))
+            {
+                --childCandidatesParentCount[j];
+                if (childCandidatesParentCount[j] < parentCount[child])
+                {
+                    availableCandidates[child][j] = false; // j'th candidate of C(child) can now be included
                 }
             }
         }
@@ -190,24 +223,6 @@ void Backtrack::Check(const Graph &data, const Graph &query, const vector<pair<V
     {
         queryVertices.push_back(pr.first);
         dataVertices.push_back(pr.second);
-    }
-
-    for (size_t i = 0; i < queryVertices.size(); ++i)
-    {
-        for (size_t j = i + 1; j < queryVertices.size(); ++j)
-        {
-            if (query.IsNeighbor(queryVertices[i], queryVertices[j]))
-            {
-                if (data.IsNeighbor(dataVertices[i], dataVertices[j]))
-                {
-                    cout << dataVertices[i] << " and " << dataVertices[j] << " are neighbors." << endl;
-                }
-                else
-                {
-                    cout << dataVertices[i] << " and " << dataVertices[j] << " are not neighbors." << endl;
-                }
-            }
-        }
     }
 
     bool correctness = true;

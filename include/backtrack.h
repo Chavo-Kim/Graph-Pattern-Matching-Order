@@ -25,7 +25,8 @@ class Backtrack {
 
    void BuildDAG(const Graph &query, const CandidateSet &cs, Vertex &root);
    void Track(const Graph &data, const Graph &query, const CandidateSet &cs, vector<pair<Vertex, Vertex>> M, const Vertex root);
-   void UpdateExtendable(const Graph &data, const CandidateSet &cs, Vertex added, Vertex candidate);
+   void AddExtendable(const Graph &data, const CandidateSet &cs, Vertex added, Vertex candidate);
+   void RemoveExtendable(const Graph &data, const CandidateSet &cs, Vertex added, Vertex candidate);
    void Debug(const Graph &data, const Graph &query, const CandidateSet &cs);
    void Check(const Graph &data, const Graph &query, const vector<pair<Vertex, Vertex>> &result);
 
