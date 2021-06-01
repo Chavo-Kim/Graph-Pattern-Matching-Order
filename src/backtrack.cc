@@ -8,8 +8,7 @@
 Backtrack::Backtrack() {}
 Backtrack::~Backtrack() {}
 
-void Backtrack::PrintAllMatches(const Graph &data, const Graph &query,
-                                const CandidateSet &cs)
+void Backtrack::PrintAllMatches(const Graph &data, const Graph &query, const CandidateSet &cs)
 {
     size_t queryCount = query.GetNumVertices();
     cout << "t " << queryCount << "\n";
@@ -32,7 +31,7 @@ void Backtrack::PrintAllMatches(const Graph &data, const Graph &query,
     BuildDAG(query, cs, DAGRoot);
 
     vector<pair<Vertex, Vertex>> initialM;
-    Track(data, cs, initialM, DAGRoot);
+    Track(data, query, cs, initialM, DAGRoot);
 }
 
 void Backtrack::BuildDAG(const Graph &query, const CandidateSet &cs, Vertex &root)
@@ -84,7 +83,7 @@ void Backtrack::BuildDAG(const Graph &query, const CandidateSet &cs, Vertex &roo
     }
 }
 
-void Backtrack::Track(const Graph &data, const CandidateSet &cs, vector<pair<Vertex, Vertex>> M, const Vertex root)
+void Backtrack::Track(const Graph &data, const Graph &query, const CandidateSet &cs, vector<pair<Vertex, Vertex>> M, const Vertex root)
 {
     size_t MSize = M.size();
     if (MSize == adj_list.size())
@@ -92,8 +91,10 @@ void Backtrack::Track(const Graph &data, const CandidateSet &cs, vector<pair<Ver
         size_t MSize = M.size();
         for (size_t i = 0; i < MSize; ++i)
         {
-            cout <<  "query: " << M[i].first << " / data: " << M[i].second << endl;
+            //cout <<  "query: " << M[i].first << " / data: " << M[i].second << endl;
         }
+        cout << "========================================" << endl;
+        Check(data, query, M);
         cout << "========================================" << endl;
         return;
     }
@@ -105,7 +106,7 @@ void Backtrack::Track(const Graph &data, const CandidateSet &cs, vector<pair<Ver
             Vertex v = cs.GetCandidate(root, i); // v belongs to C(root)
             UpdateExtendable(data, cs, root, v);
             M = {{root, v}};
-            Track(data, cs, M, root);
+            Track(data, query, cs, M, root);
         }
     }
     else
@@ -125,7 +126,7 @@ void Backtrack::Track(const Graph &data, const CandidateSet &cs, vector<pair<Ver
                     vector<pair<Vertex, Vertex>> M_p = M;
                     M_p.push_back({u, v}); // Add v to the partial embedding
                     visited[v] = true;
-                    Track(data, cs, M_p, root);
+                    Track(data, query, cs, M_p, root);
                     visited[v] = false;
                 }
             }
@@ -161,15 +162,14 @@ void Backtrack::UpdateExtendable(const Graph &data, const CandidateSet &cs, Vert
                 if (childCandidatesParentCount[j] == parentCount[child])
                 {
                     availableCandidates[child][j] = true; // j'th candidate of C(child) can now be included
-                    childCandidatesParentCount[j] = 0;
+                    //childCandidatesParentCount[j] = 0;
                 }
             }
         }
     }
 }
 
-void Backtrack::Debug(const Graph &data, const Graph &query,
-                      const CandidateSet &cs)
+void Backtrack::Debug(const Graph &data, const Graph &query, const CandidateSet &cs)
 {
     for (size_t v = 0; v < query.GetNumVertices(); v++)
     {
@@ -179,5 +179,55 @@ void Backtrack::Debug(const Graph &data, const Graph &query,
             cout << "->" << adj_list[v][i];
         }
         cout << "\n";
+    }
+}
+
+void Backtrack::Check(const Graph &data, const Graph &query, const vector<pair<Vertex, Vertex>> &result)
+{
+    vector<Vertex> queryVertices;
+    vector<Vertex> dataVertices;
+    for (auto pr : result)
+    {
+        queryVertices.push_back(pr.first);
+        dataVertices.push_back(pr.second);
+    }
+
+    for (size_t i = 0; i < queryVertices.size(); ++i)
+    {
+        for (size_t j = i + 1; j < queryVertices.size(); ++j)
+        {
+            if (query.IsNeighbor(queryVertices[i], queryVertices[j]))
+            {
+                if (data.IsNeighbor(dataVertices[i], dataVertices[j]))
+                {
+                    cout << dataVertices[i] << " and " << dataVertices[j] << " are neighbors." << endl;
+                }
+                else
+                {
+                    cout << dataVertices[i] << " and " << dataVertices[j] << " are not neighbors." << endl;
+                }
+            }
+        }
+    }
+
+    bool correctness = true;
+    for (size_t i = 0; i < queryVertices.size(); ++i)
+    {
+        for (size_t j = i + 1; j < queryVertices.size(); ++j)
+        {
+            if (query.IsNeighbor(queryVertices[i], queryVertices[j]))
+            {
+                correctness &= data.IsNeighbor(dataVertices[i], dataVertices[j]);
+            }
+        }
+    }
+
+    if (correctness)
+    {
+        cout << "Success" << endl;
+    }
+    else
+    {
+        cout << "Fail" << endl;
     }
 }
