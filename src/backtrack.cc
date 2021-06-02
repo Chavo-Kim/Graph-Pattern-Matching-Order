@@ -11,9 +11,7 @@ Backtrack::~Backtrack() {}
 vector<int32_t> *cmuCount_global;
 bool compare(const Vertex &lhs, const Vertex &rhs)
 {
-    //return cmuCount_global->at(lhs) > cmuCount_global->at(rhs);
-    return lhs < rhs;
-    //return lhs > rhs;
+    return cmuCount_global->at(lhs) < cmuCount_global->at(rhs);
 }
 
 void Backtrack::PrintAllMatches(const Graph &data, const Graph &query, const CandidateSet &cs)
