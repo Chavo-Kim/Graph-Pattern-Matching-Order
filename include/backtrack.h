@@ -13,7 +13,11 @@
 #include <queue>
 #include <vector>
 #include <set>
+#include <chrono>
+#include <functional>
 using namespace std;
+
+bool compare(const Vertex &lhs, const Vertex &rhs);
 
 class Backtrack {
  public:
@@ -27,6 +31,7 @@ class Backtrack {
    void Track(const Graph &data, const Graph &query, const CandidateSet &cs, vector<pair<Vertex, Vertex>> M, const Vertex root);
    void AddExtendable(const Graph &data, const CandidateSet &cs, Vertex added, Vertex candidate);
    void RemoveExtendable(const Graph &data, const CandidateSet &cs, Vertex added, Vertex candidate);
+   bool CompareCmuCount(const Vertex &lhs, const Vertex &rhs);
    void Debug(const Graph &data, const Graph &query, const CandidateSet &cs);
    void Check(const Graph &data, const Graph &query, const vector<pair<Vertex, Vertex>> &result);
 
@@ -38,10 +43,9 @@ class Backtrack {
    vector<int32_t> matchedParentCount; // Tracks the number of parents matched
 
    vector<vector<int32_t>> candidateMatchedParentCount;
-   vector<vector<bool>> availableCandidates;
+   vector<vector<bool>> cmu;
    vector<int32_t> cmuCount;
-
-   set<Vertex> extendable;
+   set<Vertex, decltype(compare)*> extendable;
    vector<bool> visited;
 };
 

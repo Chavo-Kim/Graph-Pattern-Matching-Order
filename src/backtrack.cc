@@ -8,23 +8,36 @@
 Backtrack::Backtrack() {}
 Backtrack::~Backtrack() {}
 
+vector<int32_t> *cmuCount_global;
+bool compare(const Vertex &lhs, const Vertex &rhs)
+{
+    //return cmuCount_global->at(lhs) > cmuCount_global->at(rhs);
+    return lhs < rhs;
+    //return lhs > rhs;
+}
+
 void Backtrack::PrintAllMatches(const Graph &data, const Graph &query, const CandidateSet &cs)
 {
+    auto start = chrono::steady_clock::now();
+
     size_t queryCount = query.GetNumVertices();
     cout << "t " << queryCount << "\n";
     size_t dataCount = data.GetNumVertices();
-
+    
     adj_list.resize(queryCount);
     parentCount.resize(queryCount);
     matchedParentCount.resize(queryCount);
     candidateMatchedParentCount.resize(queryCount);
-    availableCandidates.resize(queryCount);
+    cmu.resize(queryCount);
     for (size_t i = 0; i < queryCount; ++i)
     {
         size_t candidateSize = cs.GetCandidateSize(i);
         candidateMatchedParentCount[i].resize(candidateSize);
-        availableCandidates[i].resize(candidateSize);
+        cmu[i].resize(candidateSize);
     }
+    cmuCount.resize(queryCount);
+    cmuCount_global = &cmuCount;
+    extendable = set<Vertex, decltype(compare)*>(compare);
     visited.resize(dataCount);
 
     Vertex DAGRoot = -1;
@@ -32,6 +45,9 @@ void Backtrack::PrintAllMatches(const Graph &data, const Graph &query, const Can
 
     vector<pair<Vertex, Vertex>> initialM;
     Track(data, query, cs, initialM, DAGRoot);
+
+    auto end = chrono::steady_clock::now();
+    cout << "Elapsed(ms): " << chrono::duration_cast<chrono::milliseconds>(end - start).count() << endl;
 }
 
 void Backtrack::BuildDAG(const Graph &query, const CandidateSet &cs, Vertex &root)
@@ -91,9 +107,9 @@ void Backtrack::Track(const Graph &data, const Graph &query, const CandidateSet 
         size_t MSize = M.size();
         for (size_t i = 0; i < MSize; ++i)
         {
-            cout <<  "query: " << M[i].first << " / data: " << M[i].second << endl;
+            //cout <<  "query: " << M[i].first << " / data: " << M[i].second << "\n";
         }
-        cout << "========================================" << endl;
+        //cout << "========================================\n";
         //Check(data, query, M);
         //cout << "========================================" << endl;
         return;
@@ -111,17 +127,21 @@ void Backtrack::Track(const Graph &data, const Graph &query, const CandidateSet 
     }
     else
     {
+        if (extendable.size() == 0)
+        {
+            return;
+        }
         Vertex u = *extendable.begin(); // u = u with minimum C_m(u)
+        //cout << "U: " << u << endl;
         extendable.erase(u);
-
         size_t candSize = cs.GetCandidateSize(u);
         for (size_t i = 0; i < candSize; ++i)
         {
             Vertex v = cs.GetCandidate(u, i); // v belongs to C(u)
-            if (!visited[v]) //&& availableCandidates[u][v])
+            if (!visited[v])
             {
                 AddExtendable(data, cs, u, v);
-                if (availableCandidates[u][i])
+                if (cmu[u][i])
                 {
                     vector<pair<Vertex, Vertex>> M_p = M;
                     M_p.push_back({u, v}); // Add v to the partial embedding
@@ -145,14 +165,21 @@ void Backtrack::AddExtendable(const Graph &data, const CandidateSet &cs, Vertex 
     {
         // Update DAG count
         Vertex child = children[i]; // i'th child of added
-        ++matchedParentCount[child];
-        if (matchedParentCount[child] == parentCount[child])
+        ++matchedParentCount[child]; // child now has one more matched parent
+        if (matchedParentCount[child] == parentCount[child]) // If all parents are matched
         {
-            extendable.insert(child);
+            extendable.insert(child); // child now belongs to an extendable
         }
 
+        cout << "Add: ";
+        for (auto i : extendable)
+        {
+            cout << i << " - ";
+        }
+        cout << endl;
+
         // Update candidate count
-        vector<int32_t> &childCandidatesParentCount = candidateMatchedParentCount[child]; // matched parent count of C(child)
+        vector<int32_t> &childCandidatesParentCount = candidateMatchedParentCount[child]; // matched parent counts of C(child)
         size_t candidateSize = childCandidatesParentCount.size();
         for (size_t j = 0; j < candidateSize; ++j) 
         {
@@ -162,30 +189,32 @@ void Backtrack::AddExtendable(const Graph &data, const CandidateSet &cs, Vertex 
                 ++childCandidatesParentCount[j];
                 if (childCandidatesParentCount[j] == parentCount[child])
                 {
-                    availableCandidates[child][j] = true; // j'th candidate of C(child) can now be included
+                    cmu[child][j] = true; // j'th candidate of C(child) can now be included
+                    ++cmuCount[child];
                 }
             }
         }
     }
 }
 
-// Remove the extendable set when 'added' is removed
-void Backtrack::RemoveExtendable(const Graph &data, const CandidateSet &cs, Vertex added, Vertex candidate) // added: extended query vertex, candidate: extended candidate vertex
+// Remove the extendable set when 'removed' is removed
+void Backtrack::RemoveExtendable(const Graph &data, const CandidateSet &cs, Vertex removed, Vertex candidate) // added: extended query vertex, candidate: extended candidate vertex
 {
-    vector<Vertex> &children = adj_list[added]; // Children adjacent to the newly added
+    vector<Vertex> &children = adj_list[removed]; // Children adjacent to the newly added
     size_t childNum = children.size();
     for (size_t i = 0; i < childNum; ++i)
     {
         // Update DAG count
-        Vertex child = children[i]; // i'th child of added
+        Vertex child = children[i]; // i'th child of removed
         --matchedParentCount[child];
         if (matchedParentCount[child] < parentCount[child])
         {
+            cout << "Remove: " << child << endl;
             extendable.erase(child);
         }
 
         // Update candidate count
-        vector<int32_t> &childCandidatesParentCount = candidateMatchedParentCount[child]; // matched parent count of C(child)
+        vector<int32_t> &childCandidatesParentCount = candidateMatchedParentCount[child]; // matched parent counts of C(child)
         size_t candidateSize = childCandidatesParentCount.size();
         for (size_t j = 0; j < candidateSize; ++j) 
         {
@@ -195,7 +224,8 @@ void Backtrack::RemoveExtendable(const Graph &data, const CandidateSet &cs, Vert
                 --childCandidatesParentCount[j];
                 if (childCandidatesParentCount[j] < parentCount[child])
                 {
-                    availableCandidates[child][j] = false; // j'th candidate of C(child) can now be included
+                    cmu[child][j] = false; // j'th candidate of C(child) cannot be included from now on
+                    if (cmuCount[child] > 0) --cmuCount[child];
                 }
             }
         }
