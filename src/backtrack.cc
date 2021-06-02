@@ -16,11 +16,14 @@ bool compare(const Vertex &lhs, const Vertex &rhs)
 
 void Backtrack::PrintAllMatches(const Graph &data, const Graph &query, const CandidateSet &cs)
 {
+    //Fast I/O
+    ios_base::sync_with_stdio(false);
+    cin.tie(NULL);
+
     auto start = chrono::steady_clock::now();
 
     size_t queryCount = query.GetNumVertices();
     cout << "t " << queryCount << "\n";
-    size_t dataCount = data.GetNumVertices();
     
     adj_list.resize(queryCount);
     parentCount.resize(queryCount);
@@ -35,7 +38,14 @@ void Backtrack::PrintAllMatches(const Graph &data, const Graph &query, const Can
     }
     cmuCount.resize(queryCount);
     cmuCount_global = &cmuCount;
-    visited.resize(dataCount);
+
+    //Init
+    for (size_t v = 0; v < data.GetNumVertices(); v++)
+    {
+        visited[v] = false;
+    }
+
+    subgraphCnt = 0;
 
     Vertex DAGRoot = -1;
     BuildDAG(query, cs, DAGRoot);
@@ -44,6 +54,7 @@ void Backtrack::PrintAllMatches(const Graph &data, const Graph &query, const Can
     Track(data, query, cs, initialM, DAGRoot);
 
     auto end = chrono::steady_clock::now();
+//    cout << subgraphCnt << "\n";
     cout << "Elapsed(ms): " << chrono::duration_cast<chrono::milliseconds>(end - start).count() << endl;
 }
 
@@ -102,13 +113,19 @@ void Backtrack::Track(const Graph &data, const Graph &query, const CandidateSet 
     if (MSize == adj_list.size())
     {
         size_t MSize = M.size();
+        cout << "a ";
         for (size_t i = 0; i < MSize; ++i)
         {
-            cout <<  "query: " << M[i].first << " / data: " << M[i].second << "\n";
+            cout << M[i].second << " ";
         }
-        cout << "========================================\n";
-        //Check(data, query, M);
-        //cout << "========================================" << endl;
+        cout << "\n";
+//        Check(data, query, M);
+//        cout << "========================================" << endl;
+//        subgraphCnt++;
+//        if(subgraphCnt == MAX_CNT)
+//        {
+//            exit(0);
+//        }
         return;
     }
     else if (MSize == 0)
@@ -119,7 +136,10 @@ void Backtrack::Track(const Graph &data, const Graph &query, const CandidateSet 
             Vertex v = cs.GetCandidate(root, i); // v belongs to C(root)
             AddExtendable(data, cs, root, v);
             M = {{root, v}};
+            visited[v] = true;
             Track(data, query, cs, M, root);
+//            visited[v] = false;
+//            RemoveExtendable(data, cs, root, v);
         }
     }
     else
@@ -236,7 +256,7 @@ void Backtrack::Debug(const Graph &data, const Graph &query, const CandidateSet 
     }
 }
 
-void Backtrack::Check(const Graph &data, const Graph &query, const vector<pair<Vertex, Vertex>> &result)
+int Backtrack::Check(const Graph &data, const Graph &query, const vector<pair<Vertex, Vertex>> &result)
 {
     vector<Vertex> queryVertices;
     vector<Vertex> dataVertices;
@@ -265,5 +285,6 @@ void Backtrack::Check(const Graph &data, const Graph &query, const vector<pair<V
     else
     {
         cout << "Fail" << endl;
+        exit(1);
     }
 }
