@@ -45,7 +45,7 @@ class Backtrack {
    vector<vector<int32_t>> candidateMatchedParentCount;
    vector<vector<bool>> cmu;
    vector<int32_t> cmuCount;
-   set<Vertex, decltype(compare)*> extendable;
+   set<Vertex> extendable;
    vector<bool> visited;
 };
 

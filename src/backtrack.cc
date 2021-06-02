@@ -37,7 +37,6 @@ void Backtrack::PrintAllMatches(const Graph &data, const Graph &query, const Can
     }
     cmuCount.resize(queryCount);
     cmuCount_global = &cmuCount;
-    extendable = set<Vertex, decltype(compare)*>(compare);
     visited.resize(dataCount);
 
     Vertex DAGRoot = -1;
@@ -131,9 +130,11 @@ void Backtrack::Track(const Graph &data, const Graph &query, const CandidateSet 
         {
             return;
         }
+        
+        auto minCmu = min_element(extendable.begin(), extendable.end(), compare);
         Vertex u = *extendable.begin(); // u = u with minimum C_m(u)
-        //cout << "U: " << u << endl;
-        extendable.erase(u);
+        extendable.erase(minCmu);
+
         size_t candSize = cs.GetCandidateSize(u);
         for (size_t i = 0; i < candSize; ++i)
         {
