@@ -45,8 +45,6 @@ void Backtrack::PrintAllMatches(const Graph &data, const Graph &query, const Can
         visited[v] = false;
     }
 
-    subgraphCnt = 0;
-
     Vertex DAGRoot = -1;
     BuildDAG(query, cs, DAGRoot);
 
@@ -54,7 +52,7 @@ void Backtrack::PrintAllMatches(const Graph &data, const Graph &query, const Can
     Track(data, query, cs, initialM, DAGRoot);
 
     auto end = chrono::steady_clock::now();
-//    cout << subgraphCnt << "\n";
+
     cout << "Elapsed(ms): " << chrono::duration_cast<chrono::milliseconds>(end - start).count() << endl;
 }
 
@@ -119,9 +117,8 @@ void Backtrack::Track(const Graph &data, const Graph &query, const CandidateSet 
             cout << M[i].second << " ";
         }
         cout << "\n";
-//        Check(data, query, M);
-//        cout << "========================================" << endl;
-//        subgraphCnt++;
+        Check(data, query, M);
+        cout << "========================================" << endl;
 //        if(subgraphCnt == MAX_CNT)
 //        {
 //            exit(0);
@@ -138,8 +135,8 @@ void Backtrack::Track(const Graph &data, const Graph &query, const CandidateSet 
             M = {{root, v}};
             visited[v] = true;
             Track(data, query, cs, M, root);
-//            visited[v] = false;
-//            RemoveExtendable(data, cs, root, v);
+            visited[v] = false;
+            RemoveExtendable(data, cs, root, v);
         }
     }
     else
