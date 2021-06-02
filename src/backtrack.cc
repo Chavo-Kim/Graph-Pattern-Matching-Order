@@ -130,9 +130,9 @@ void Backtrack::Track(const Graph &data, const Graph &query, const CandidateSet 
         {
             return;
         }
-        
+
         auto minCmu = min_element(extendable.begin(), extendable.end(), compare);
-        Vertex u = *extendable.begin(); // u = u with minimum C_m(u)
+        Vertex u = *minCmu; // u = u with minimum C_m(u)
         extendable.erase(minCmu);
 
         size_t candSize = cs.GetCandidateSize(u);

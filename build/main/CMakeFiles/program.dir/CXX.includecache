@@ -52,16 +52,6 @@ vector
 common.h
 ../include/common.h
 
-/mnt/c/Users/smsychjy/Desktop/학교/2021-1/알고리즘/Graph-Pattern-Matching-Order/main/main.cc
-backtrack.h
-/mnt/c/Users/smsychjy/Desktop/학교/2021-1/알고리즘/Graph-Pattern-Matching-Order/main/backtrack.h
-candidate_set.h
-/mnt/c/Users/smsychjy/Desktop/학교/2021-1/알고리즘/Graph-Pattern-Matching-Order/main/candidate_set.h
-common.h
-/mnt/c/Users/smsychjy/Desktop/학교/2021-1/알고리즘/Graph-Pattern-Matching-Order/main/common.h
-graph.h
-/mnt/c/Users/smsychjy/Desktop/학교/2021-1/알고리즘/Graph-Pattern-Matching-Order/main/graph.h
-
 /mnt/c/Users/smsychjy/Desktop/학교/2021-1/알고리즘/Graph-Pattern-Matching-Order/src/backtrack.cc
 backtrack.h
 /mnt/c/Users/smsychjy/Desktop/학교/2021-1/알고리즘/Graph-Pattern-Matching-Order/src/backtrack.h
