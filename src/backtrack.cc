@@ -107,9 +107,9 @@ void Backtrack::Track(const Graph &data, const Graph &query, const CandidateSet 
         size_t MSize = M.size();
         for (size_t i = 0; i < MSize; ++i)
         {
-            //cout <<  "query: " << M[i].first << " / data: " << M[i].second << "\n";
+            cout <<  "query: " << M[i].first << " / data: " << M[i].second << "\n";
         }
-        //cout << "========================================\n";
+        cout << "========================================\n";
         //Check(data, query, M);
         //cout << "========================================" << endl;
         return;
@@ -171,13 +171,6 @@ void Backtrack::AddExtendable(const Graph &data, const CandidateSet &cs, Vertex 
             extendable.insert(child); // child now belongs to an extendable
         }
 
-        cout << "Add: ";
-        for (auto i : extendable)
-        {
-            cout << i << " - ";
-        }
-        cout << endl;
-
         // Update candidate count
         vector<int32_t> &childCandidatesParentCount = candidateMatchedParentCount[child]; // matched parent counts of C(child)
         size_t candidateSize = childCandidatesParentCount.size();
@@ -209,7 +202,6 @@ void Backtrack::RemoveExtendable(const Graph &data, const CandidateSet &cs, Vert
         --matchedParentCount[child];
         if (matchedParentCount[child] < parentCount[child])
         {
-            cout << "Remove: " << child << endl;
             extendable.erase(child);
         }
 
