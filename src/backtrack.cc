@@ -20,11 +20,14 @@ void Backtrack::PrintAllMatches(const Graph &data, const Graph &query, const Can
     ios_base::sync_with_stdio(false);
     cin.tie(NULL);
 
+#ifdef DEBUG
     auto start = chrono::steady_clock::now();
+#endif
 
     size_t queryCount = query.GetNumVertices();
     cout << "t " << queryCount << "\n";
-    
+
+    //Initialize Vector Size
     adj_list.resize(queryCount);
     parentCount.resize(queryCount);
     matchedParentCount.resize(queryCount);
@@ -51,32 +54,33 @@ void Backtrack::PrintAllMatches(const Graph &data, const Graph &query, const Can
     vector<pair<Vertex, Vertex>> initialM;
     Track(data, query, cs, initialM, DAGRoot);
 
+#ifdef DEBUG
     auto end = chrono::steady_clock::now();
-
     cout << "Elapsed(ms): " << chrono::duration_cast<chrono::milliseconds>(end - start).count() << endl;
+#endif
 }
 
 void Backtrack::BuildDAG(const Graph &query, const CandidateSet &cs, Vertex &root)
 {
-    int32_t min = INT_MAX;
-    Vertex root_vertex = -1;
+    int32_t min = INT_MAX; // initialize min value
+    Vertex root_vertex = -1;  // initialize root vertex
 
     for (size_t v = 0; v < query.GetNumVertices(); v++)
     {
-        int32_t ret = cs.GetCandidateSize(v) / query.GetDegree(v);
-        if (ret < min)
+        int32_t ret = cs.GetCandidateSize(v) / query.GetDegree(v); // = |C(u)| / deg(u)
+        if (ret < min) //update min value and root vertex
         {
             min = ret;
             root_vertex = v;
         }
     }
 
-    std::queue<int32_t> q;
-    std::set<int> check_edge;
-    q.push(root_vertex);
-    root = root_vertex;
+    std::queue<int32_t> q; // queue for BFS
+    std::set<int> check_edge; // check edge is added
+    q.push(root_vertex); // push root vertex
+    root = root_vertex; // pass root vertex info
 
-    //Init
+    //check vertex is searched
     for (size_t v = 0; v < query.GetNumVertices(); v++)
     {
         check_vertex[v] = false;
@@ -86,17 +90,21 @@ void Backtrack::BuildDAG(const Graph &query, const CandidateSet &cs, Vertex &roo
     {
         Vertex v = q.front();
         q.pop();
-        if (check_vertex[v])
+        if (check_vertex[v]) // If already search neighbor vertexes, we dont need to check this vertex
             continue;
-        check_vertex[v] = true;
+        check_vertex[v] = true; //Mark as checked
 
+        //Iterate all neighbors
         for (size_t offset = query.GetNeighborStartOffset(v); offset < query.GetNeighborEndOffset(v); offset++)
         {
             Vertex u = query.GetNeighbor(offset);
 
+            //if edge is unvisited
             if (check_edge.find(u * 10000 + v) == check_edge.end())
             {
+                //add edge to set
                 check_edge.insert(v * 10000 + u);
+                //push other vertex in queue
                 q.push(u);
                 adj_list[v].push_back(u);
                 ++parentCount[u];
@@ -117,12 +125,12 @@ void Backtrack::Track(const Graph &data, const Graph &query, const CandidateSet 
             cout << M[i].second << " ";
         }
         cout << "\n";
+
+#ifdef DEBUG
         Check(data, query, M);
         cout << "========================================" << endl;
-//        if(subgraphCnt == MAX_CNT)
-//        {
-//            exit(0);
-//        }
+#endif
+
         return;
     }
     else if (MSize == 0)
@@ -253,7 +261,7 @@ void Backtrack::Debug(const Graph &data, const Graph &query, const CandidateSet 
     }
 }
 
-int Backtrack::Check(const Graph &data, const Graph &query, const vector<pair<Vertex, Vertex>> &result)
+void Backtrack::Check(const Graph &data, const Graph &query, const vector<pair<Vertex, Vertex>> &result)
 {
     vector<Vertex> queryVertices;
     vector<Vertex> dataVertices;
