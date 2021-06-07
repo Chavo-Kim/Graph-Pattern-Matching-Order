@@ -5,6 +5,9 @@
 
 #include "backtrack.h"
 
+// #define DEBUG
+// #define TEST
+
 Backtrack::Backtrack() {}
 Backtrack::~Backtrack() {}
 
@@ -13,6 +16,13 @@ bool compare(const Vertex &lhs, const Vertex &rhs)
 {
     return cmuCount_global->at(lhs) < cmuCount_global->at(rhs);
 }
+#ifdef DEBUG
+ auto start = chrono::steady_clock::now();
+#endif
+
+#ifdef TEST
+ auto start = chrono::steady_clock::now();
+#endif
 
 void Backtrack::PrintAllMatches(const Graph &data, const Graph &query, const CandidateSet &cs)
 {
@@ -21,6 +31,10 @@ void Backtrack::PrintAllMatches(const Graph &data, const Graph &query, const Can
     cin.tie(NULL);
 
 #ifdef DEBUG
+    auto start = chrono::steady_clock::now();
+#endif
+
+#ifdef TEST
     auto start = chrono::steady_clock::now();
 #endif
 
@@ -55,6 +69,11 @@ void Backtrack::PrintAllMatches(const Graph &data, const Graph &query, const Can
     Track(data, query, cs, initialM, DAGRoot);
 
 #ifdef DEBUG
+    auto end = chrono::steady_clock::now();
+    cout << "Elapsed(ms): " << chrono::duration_cast<chrono::milliseconds>(end - start).count() << endl;
+#endif
+#ifdef TEST
+    cout << "Found embeddings: " << subgraphCnt << "\n";
     auto end = chrono::steady_clock::now();
     cout << "Elapsed(ms): " << chrono::duration_cast<chrono::milliseconds>(end - start).count() << endl;
 #endif
@@ -126,16 +145,29 @@ void Backtrack::Track(const Graph &data, const Graph &query, const CandidateSet 
         }
         cout << "\n";
 
-        ++subgraphCnt;
-        if(subgraphCnt == MAX_CNT)
-        {
-            exit(0);
-        }
-
 #ifdef DEBUG
         Check(data, query, M);
         cout << "========================================" << endl;
 #endif
+#ifdef TEST
+        Check(data, query, M);
+#endif
+
+        ++subgraphCnt;
+        if(subgraphCnt == MAX_CNT)
+        {
+#ifdef DEBUG
+            cout << "Exceed 100,000 embeddings!";
+            auto end = chrono::steady_clock::now();
+            cout << "Elapsed(ms): " << chrono::duration_cast<chrono::milliseconds>(end - start).count() << endl;
+#endif
+#ifdef TEST
+            cout << "Found embeddings: " << subgraphCnt << "\n";
+            auto end = chrono::steady_clock::now();
+            cout << "Elapsed(ms): " << chrono::duration_cast<chrono::milliseconds>(end - start).count() << endl;
+#endif
+            exit(0);
+        }
 
         return;
     }
@@ -291,7 +323,9 @@ void Backtrack::Check(const Graph &data, const Graph &query, const vector<pair<V
 
     if (correctness)
     {
+#ifdef DEBUG
         cout << "Success" << endl;
+#endif
     }
     else
     {
