@@ -15,6 +15,7 @@
 #include <set>
 #include <chrono>
 #include <functional>
+#include <fstream>
 using namespace std;
 
 #define MAX_CNT 100000
@@ -38,6 +39,10 @@ class Backtrack {
    void Check(const Graph &data, const Graph &query, const vector<pair<Vertex, Vertex>> &result);
 
  private:
+   ofstream writeFile;
+
+   int subgraphCnt;
+
    vector<vector<Vertex>> adj_list;
    bool check_vertex[10001];
 
@@ -48,7 +53,7 @@ class Backtrack {
    vector<vector<bool>> cmu;
    vector<int32_t> cmuCount;
    set<Vertex> extendable;
-    bool visited[10001];
+   bool visited[10001];
 };
 
 #endif  // BACKTRACK_H_
