@@ -6,9 +6,9 @@ We try to follow adaptive matching order suggested by Myoungi Han et al(2019).
 
 Using candidate-size order, we choose extendable vertex that has minimum candidate-size.
 
-###Pseudo Code
+### Pseudo Code
 
-####Backtrack Function
+#### Backtrack Function
 
 ```
 BACKTRACK(q, q_d, CS, M) do
