@@ -17,16 +17,15 @@ bool compare(const Vertex &lhs, const Vertex &rhs)
 void Backtrack::PrintAllMatches(const Graph &data, const Graph &query, const CandidateSet &cs)
 {
     //Fast I/O
-    //ios_base::sync_with_stdio(false);
-    //cin.tie(NULL);
-    writeFile.open("result.txt");
+    ios_base::sync_with_stdio(false);
+    cin.tie(NULL);
 
 #ifdef DEBUG
     auto start = chrono::steady_clock::now();
 #endif
 
     size_t queryCount = query.GetNumVertices();
-    writeFile << "t " << queryCount << "\n";
+    cout << "t " << queryCount << "\n";
 
     //Initialize Vector Size
     adj_list.resize(queryCount);
@@ -54,8 +53,6 @@ void Backtrack::PrintAllMatches(const Graph &data, const Graph &query, const Can
 
     vector<pair<Vertex, Vertex>> initialM;
     Track(data, query, cs, initialM, DAGRoot);
-
-    writeFile.close();
 
 #ifdef DEBUG
     auto end = chrono::steady_clock::now();
@@ -122,12 +119,12 @@ void Backtrack::Track(const Graph &data, const Graph &query, const CandidateSet 
     if (MSize == adj_list.size())
     {
         size_t MSize = M.size();
-        writeFile << "a ";
+        cout << "a ";
         for (size_t i = 0; i < MSize; ++i)
         {
-            writeFile << M[i].second << " ";
+            cout << M[i].second << " ";
         }
-        writeFile << "\n";
+        cout << "\n";
 
         ++subgraphCnt;
         if(subgraphCnt == MAX_CNT)

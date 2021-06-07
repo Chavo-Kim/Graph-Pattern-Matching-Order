@@ -15,7 +15,6 @@
 #include <set>
 #include <chrono>
 #include <functional>
-#include <fstream>
 using namespace std;
 
 #define MAX_CNT 100000
@@ -39,8 +38,6 @@ class Backtrack {
    void Check(const Graph &data, const Graph &query, const vector<pair<Vertex, Vertex>> &result);
 
  private:
-   ofstream writeFile;
-
    int subgraphCnt;
 
    vector<vector<Vertex>> adj_list;
