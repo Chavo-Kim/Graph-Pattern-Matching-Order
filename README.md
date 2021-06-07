@@ -32,7 +32,7 @@ BACKTRACK(q, q_d, CS, M) do
     return; 
 ```
 
-####Correctness checker Function
+#### Correctness checker Function
 
 ```
 CORRECTNESS_CHECKER(M) do
@@ -47,7 +47,7 @@ CORRECTNESS_CHECKER(M) do
 
 ```
 
-###How to execute
+### How to execute
 ```
 mkdir build
 cd build
