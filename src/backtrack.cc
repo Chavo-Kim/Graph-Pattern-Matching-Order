@@ -132,7 +132,7 @@ void Backtrack::BuildDAG(const Graph &query, const CandidateSet &cs, Vertex &roo
     }
 }
 
-void Backtrack::Track(const Graph &data, const Graph &query, const CandidateSet &cs, vector<pair<Vertex, Vertex>> M, const Vertex root)
+void Backtrack::Track(const Graph &data, const Graph &query, const CandidateSet &cs, vector<pair<Vertex, Vertex>> &M, const Vertex root)
 {
     size_t MSize = M.size();
     if (MSize == adj_list.size())
@@ -205,11 +205,11 @@ void Backtrack::Track(const Graph &data, const Graph &query, const CandidateSet 
                 AddExtendable(data, cs, u, v);
                 if (cmu[u][i])
                 {
-                    vector<pair<Vertex, Vertex>> M_p = M;
-                    M_p.push_back({u, v}); // Add v to the partial embedding
+                    M.push_back({u, v}); // Add v to the partial embedding
                     visited[v] = true;
-                    Track(data, query, cs, M_p, root);
+                    Track(data, query, cs, M, root);
                     visited[v] = false;
+                    M.pop_back();
                 }
                 RemoveExtendable(data, cs, u, v);
             }

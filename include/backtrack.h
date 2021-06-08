@@ -30,7 +30,7 @@ class Backtrack {
                      const CandidateSet &cs);
 
    void BuildDAG(const Graph &query, const CandidateSet &cs, Vertex &root);
-   void Track(const Graph &data, const Graph &query, const CandidateSet &cs, vector<pair<Vertex, Vertex>> M, const Vertex root);
+   void Track(const Graph &data, const Graph &query, const CandidateSet &cs, vector<pair<Vertex, Vertex>> &M, const Vertex root);
    void AddExtendable(const Graph &data, const CandidateSet &cs, Vertex added, Vertex candidate);
    void RemoveExtendable(const Graph &data, const CandidateSet &cs, Vertex added, Vertex candidate);
    bool CompareCmuCount(const Vertex &lhs, const Vertex &rhs);
