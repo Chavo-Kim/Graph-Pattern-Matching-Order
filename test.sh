@@ -1,5 +1,7 @@
 #!/bin/bash
 
+rm -rf result.txt
+
 for p in `ls -1 ./data`; do
   PASSED=0
   TOTAL=0
