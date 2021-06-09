@@ -55,6 +55,7 @@ void Backtrack::PrintAllMatches(const Graph &data, const Graph &query, const Can
     }
     cmuCount.resize(queryCount);
     cmuCount_global = &cmuCount;
+    result.resize(queryCount);
 
     //Init
     for (size_t v = 0; v < data.GetNumVertices(); v++)
@@ -138,12 +139,18 @@ void Backtrack::Track(const Graph &data, const Graph &query, const CandidateSet 
     if (MSize == adj_list.size())
     {
         size_t MSize = M.size();
-        cout << "a ";
         for (size_t i = 0; i < MSize; ++i)
         {
-            cout << M[i].second << " ";
+            result[M[i].first] =  M[i].second;
+        }
+
+        cout << "a";
+        for (size_t i = 0; i < MSize; ++i)
+        {
+            cout << " " << result[i];
         }
         cout << "\n";
+
 
 #ifdef DEBUG
         Check(data, query, M);

@@ -51,6 +51,7 @@ class Backtrack {
    vector<int32_t> cmuCount;
    set<Vertex> extendable;
    bool visited[10001];
+   vector<Vertex> result;
 };
 
 #endif  // BACKTRACK_H_
